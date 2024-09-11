@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Endereço por CEP</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        form {
+            max-width: 400px;
+            margin: auto;
+        }
+        input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <form id="formEndereco">
+        <h3>Preencha seu endereço</h3>
+
+        <label for="cep">CEP:</label>
+        <input type="text" id="cep" name="cep" placeholder="Digite o CEP" required>
+
+        <label for="logradouro">Logradouro:</label>
+        <input type="text" id="logradouro" name="logradouro" placeholder="Logradouro">
+
+        <label for="bairro">Bairro:</label>
+        <input type="text" id="bairro" name="bairro" placeholder="Bairro">
+
+        <label for="cidade">Cidade:</label>
+        <input type="text" id="cidade" name="cidade" placeholder="Cidade">
+
+        <label for="uf">Estado (UF):</label>
+        <input type="text" id="uf" name="uf" placeholder="Estado">
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+       
+        function limpaCEP(cep) {
+            return cep.replace(/\D/g, '');
+        }
+
+        function consultaCEP() {
+            var cep = limpaCEP($('#cep').val());
+
+            if (cep.length === 8) {
+                var url = `https://viacep.com.br/ws/${cep}/json/`;
+
+                $.ajax({
+                    url: url,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (!response.erro) {
+                            $('#logradouro').val(response.logradouro);
+                            $('#bairro').val(response.bairro);
+                            $('#cidade').val(response.localidade);
+                            $('#uf').val(response.uf);
+                        } else {
+                            alert('CEP não encontrado.');
+                        }
+                    },
+                    error: function() {
+                        alert('Erro ao buscar o CEP.');
+                    }
+                });
+            } else {
+                alert('CEP inválido. O CEP deve conter 8 dígitos.');
+            }
+        }
+
+        
+        $('#cep').on('blur', function() {
+            consultaCEP();
+        });
+    </script>
+
+</body>
+</html>
